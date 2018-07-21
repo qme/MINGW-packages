@@ -5,7 +5,7 @@ _pyname=Sphinx
 _realname=sphinx
 pkgbase=mingw-w64-python-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
-pkgver=1.7.5
+pkgver=1.7.6
 pkgrel=2
 pkgdesc="Python documentation generator (mingw-w64)"
 arch=('any')
@@ -31,7 +31,7 @@ makedepends=(
             "${MINGW_PACKAGE_PREFIX}-python2-setuptools"
             "${MINGW_PACKAGE_PREFIX}-python2-six"
             "${MINGW_PACKAGE_PREFIX}-python2-sqlalchemy"
-            "${MINGW_PACKAGE_PREFIX}-python3-whoosh"
+            "${MINGW_PACKAGE_PREFIX}-python2-whoosh"
             )
 checkdepends=(
               "${MINGW_PACKAGE_PREFIX}-python3-nose"
@@ -51,7 +51,7 @@ checkdepends=(
               )
 #_dtoken="40/45/d4a68a1f8dc669714f48d251afb4352036f87be5e9873cd27e57b9c141f0"
 source=("${_realname}-${pkgver}.tar.gz"::"https://pypi.org/packages/source/S/${_pyname}/${_pyname}-${pkgver}.tar.gz")
-sha256sums=('d45480a229edf70d84ca9fae3784162b1bc75ee47e480ffe04a4b7f21a95d76d')
+sha256sums=('217ad9ece2156ed9f8af12b5d2c82a499ddf2c70a33c5f81864a08d8c67b9efc')
 
 prepare() {
   # source duplication is required because makefile modify source code
@@ -90,6 +90,7 @@ package_python3-sphinx() {
            "${MINGW_PACKAGE_PREFIX}-python3-idna"
            "${MINGW_PACKAGE_PREFIX}-python3-imagesize"
            "${MINGW_PACKAGE_PREFIX}-python3-jinja"
+           "${MINGW_PACKAGE_PREFIX}-python3-packaging"
            "${MINGW_PACKAGE_PREFIX}-python3-pygments"
            "${MINGW_PACKAGE_PREFIX}-python3-requests"
            "${MINGW_PACKAGE_PREFIX}-python3-sphinx_rtd_theme"
@@ -126,6 +127,7 @@ package_python2-sphinx() {
            "${MINGW_PACKAGE_PREFIX}-python2-idna"
            "${MINGW_PACKAGE_PREFIX}-python2-imagesize"
            "${MINGW_PACKAGE_PREFIX}-python2-jinja"
+           "${MINGW_PACKAGE_PREFIX}-python2-packaging"
            "${MINGW_PACKAGE_PREFIX}-python2-pygments"
            "${MINGW_PACKAGE_PREFIX}-python2-requests"
            "${MINGW_PACKAGE_PREFIX}-python2-sphinx_rtd_theme"
