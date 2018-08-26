@@ -1,37 +1,23 @@
-# Maintainer: Some One <some.one@some.email.com>
-#This value is here because some python package names have capital letters
-#while there is a strong preference for lowercase letters in ArchLinux and
-#MSYS packages.
+# Maintainer: J. Peter Mugaas <jpmugaas@suddenlink.net>
 
-_realname=somepackage
+_realname=py-cpuinfo
 pkgbase=mingw-w64-python-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}"  "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
-pkgver=1.0.0
+pkgver=4.0.0
+_commit=202e2fe4a362c9558cae074e7dbff1173d030437
 pkgrel=1
-pkgdesc="Some package (mingw-w64)"
+pkgdesc="Get CPU info with pure Python 2 & 3 (mingw-w64)"
 arch=('any')
-url='https://www.somepackage.org/'
-license=('LICENSE')
-validpgpkeys=('gpg_KEY')
+url='https://github.com/workhorsy/py-cpuinfo'
+license=('MIT')
 makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
              "${MINGW_PACKAGE_PREFIX}-python3"
              "${MINGW_PACKAGE_PREFIX}-python3-setuptools"
              "${MINGW_PACKAGE_PREFIX}-python2-setuptools")
-options=('staticlibs' 'strip' '!debug')
-#Ideally, you should download the sources from github or some other place besides
-#pypi, but that ideal is not always possible.
-_dtoken='aa/aa/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-#Some Python packages software might use this instead
-#source=("https://pypi.python.org/packages/source/[first letter of the packages]/${_realname}/${_realname}-${pkgver}.tar.gz")
-@_dtoken would be the part of the URL between the /package and filename.
-# I did this to make it so you could just update the token to a new version instead of the complete
-# download URL.
-source=("https://pypi.python.org/packages/${_dtoken}/${_realname}-${pkgver}.tar.gz"
-        "0001-An-important-fix.patch"
-        "0002-A-less-important-fix.patch")
-sha256sums=('SKIP'
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-            'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+checkdepends=("${MINGW_PACKAGE_PREFIX}-python3-pytest-runner"
+              "${MINGW_PACKAGE_PREFIX}-python2-pytest-runner")
+source=("${_realname}-${_commit}.tar.gz"::"https://github.com/workhorsy/py-cpuinfo/archive/$_commit.tar.gz")
+sha256sums=('01edde0df583c7b62a38e32956ad2fae92d680c0ce6b7fb7dd53c87de95ea6b7')
 
 # Helper macros to help make tasks easier #
 apply_patch_with_msg() {
@@ -54,13 +40,9 @@ del_file_exists() {
 
 prepare() {
   cd "${srcdir}"
-  pushd "${_realname}-${pkgver}"
-    apply_patch_with_msg 0001-A-really-important-fix.patch \
-      0002-A-less-important-fix.patch
-  popd 
   for builddir in python{2,3}-build-${CARCH}; do
     rm -rf ${builddir} | true
-    cp -r "${_realname}-${pkgver}" "${builddir}"
+    cp -r "${_realname}-${_commit}" "${builddir}"
   done
   # Set version for setuptools_scm
   export SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver
@@ -82,15 +64,12 @@ check() {
   for pver in {2,3}; do
     msg "Python ${pver} test for ${CARCH}"
     cd "${srcdir}/python${pver}-build-${CARCH}"
-    ${MINGW_PREFIX}/bin/python${pver} setup.py check
+    ${MINGW_PREFIX}/bin/python${pver} setup.py pytest
   done
 }
 
-package_python3-somepackage() {
+package_python3-py-cpuinfo() {
   depends=("${MINGW_PACKAGE_PREFIX}-python3")
-  #This package install is needed for .fixups with .EXE's 
-  #in the bit directory.  The install files "python-exe-installs"
-  #and should be renamed to your _realname .
   install=${_realname}3-${CARCH}.install
 
   cd "${srcdir}/python3-build-${CARCH}"
@@ -98,7 +77,7 @@ package_python3-somepackage() {
   ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
     --root="${pkgdir}" --optimize=1 --skip-build
 
-  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/COPYING"
 
 # This entire section should be removed if the package does NOT install
 # anything in the /mingw*/bin directory.
@@ -106,17 +85,13 @@ package_python3-somepackage() {
   local PREFIX_WIN=$(cygpath -wm ${MINGW_PREFIX})
   # fix python command in files
   for _f in "${pkgdir}${MINGW_PREFIX}"/bin/*.py; do
-    sed -e "s|/usr/bin/env |${MINGW_PREFIX}|g" \
-        -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i ${_f}
+    sed -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i  ${_f}
   done
 #### end section ####
 }
 
-package_python2-somepackage() {
+package_python2-py-cpuinfo() {
   depends=("${MINGW_PACKAGE_PREFIX}-python2")
-  #This package install is needed for .fixups with .EXE's 
-  #in the bit directory.  The install files "python-exe-installs"
-  #and should be renamed to your _realname
   install=${_realname}2-${CARCH}.install
 
   cd "${srcdir}/python2-build-${CARCH}"
@@ -124,22 +99,21 @@ package_python2-somepackage() {
   ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
     --root="${pkgdir}" --optimize=1 --skip-build
 
-  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/COPYING"
 
 # This entire section should be removed if the package does NOT install
-# anything in the /mingw*/bin directory. 
+# anything in the /mingw*/bin directory.
 ### begin section ###
   local PREFIX_WIN=$(cygpath -wm ${MINGW_PREFIX})
   # fix python command in files
   for _f in "${pkgdir}${MINGW_PREFIX}"/bin/*.py; do
-    sed -e "s|/usr/bin/env |${MINGW_PREFIX}|g" \
-        -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i ${_f}
+    sed -e "s|${PREFIX_WIN}|${MINGW_PREFIX}|g" -i ${_f}
   done
 
 # for Python2 packages, you want to rename some stuff from the bin directory 
 # with the 2 suffix like in the mingw-w64-python-pygments package to avoid
 # conflicts when installing both the Python2 and Python3 packages
-  for f in somepackage; do
+  for f in cpuinfo; do
     mv "${pkgdir}${MINGW_PREFIX}"/bin/${f}{,2}.exe
     if [ -f "${pkgdir}${MINGW_PREFIX}"/bin/${f}.exe.manifest ]; then
       mv "${pkgdir}${MINGW_PREFIX}"/bin/${f}{,2}.exe.manifest
@@ -150,18 +124,18 @@ package_python2-somepackage() {
 #### end section ####
 }
 
-package_mingw-w64-i686-python2-somepackage() {
-  package_python2-somepackage
+package_mingw-w64-i686-python2-py-cpuinfo() {
+  package_python2-py-cpuinfo
 }
 
-package_mingw-w64-i686-python3-somepackage() {
-  package_python3-somepackage
+package_mingw-w64-i686-python3-py-cpuinfo() {
+  package_python3-py-cpuinfo
 }
 
-package_mingw-w64-x86_64-python2-somepackage() {
-  package_python2-somepackage
+package_mingw-w64-x86_64-python2-py-cpuinfo() {
+  package_python2-py-cpuinfo
 }
 
-package_mingw-w64-x86_64-python3-somepackage() {
-  package_python3-somepackage
+package_mingw-w64-x86_64-python3-py-cpuinfo() {
+  package_python3-py-cpuinfo
 }
