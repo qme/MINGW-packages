@@ -4,7 +4,7 @@ _realname=matplotlib
 pkgbase=mingw-w64-python-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
 pkgver=2.2.3
-pkgrel=2
+pkgrel=3
 pkgdesc="A python plotting library, making publication quality plots (mingw-w64)"
 arch=('any')
 url='https://matplotlib.org/'
@@ -30,6 +30,7 @@ makedepends=(
             "${MINGW_PACKAGE_PREFIX}-python3-cycler"
             "${MINGW_PACKAGE_PREFIX}-python2-kiwisolver"
             "${MINGW_PACKAGE_PREFIX}-python3-kiwisolver"
+            "${MINGW_PACKAGE_PREFIX}-python2-backports.functools_lru_cache"
             "${MINGW_PACKAGE_PREFIX}-freetype"
             "${MINGW_PACKAGE_PREFIX}-libpng"
             #"${MINGW_PACKAGE_PREFIX}-qhull"
@@ -110,6 +111,7 @@ package_python2-matplotlib() {
         "${MINGW_PACKAGE_PREFIX}-python2-dateutil"
         "${MINGW_PACKAGE_PREFIX}-python2-pyparsing"
         "${MINGW_PACKAGE_PREFIX}-python2-kiwisolver"
+        "${MINGW_PACKAGE_PREFIX}-python2-backports.functools_lru_cache"
         "${MINGW_PACKAGE_PREFIX}-freetype"
         "${MINGW_PACKAGE_PREFIX}-libpng"
         #"${MINGW_PACKAGE_PREFIX}-qhull"
